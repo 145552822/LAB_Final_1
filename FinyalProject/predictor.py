@@ -10,7 +10,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 
-# ─── Известные значения из датасета ──────────────────────────────────────────
+# Известные значения из датасета
 
 KNOWN_COMPANIES = ['Yandex Go', 'InDrive', 'Navi Taxi']
 KNOWN_TARIFFS   = ['Эконом', 'Комфорт', 'Комфорт +']
@@ -79,7 +79,7 @@ def predict_price(model, feature_names: list, df_raw: pd.DataFrame,
     # Собираем строку с признаками
     row = {}
 
-    # Категориальные признаки (кодируем теми же encoder'ами)
+    # Категориальные признаки (кодируем теми же encoder)
     cat_mapping = {
         'Компания': KNOWN_COMPANIES,
         'Эконом': KNOWN_TARIFFS,
@@ -91,11 +91,11 @@ def predict_price(model, feature_names: list, df_raw: pd.DataFrame,
         if col in cat_mapping:
             # Категориальный признак
             if col in user_input:
-                # Пытаемся найти соответствие в encoder'е
+                # Пытаемся найти соответствие в encoder
                 try:
                     row[col] = encoders[col].transform([user_input[col]])[0]
                 except:
-                    # Если значения нет в обученном encoder'е, используем первое значение
+                    # Если значения нет в обученном encoder, используем первое значение
                     row[col] = 0
             else:
                 # Используем моду (наиболее частотное значение)
@@ -136,23 +136,23 @@ def predict_price(model, feature_names: list, df_raw: pd.DataFrame,
     return round(float(price), 1)
 
 
-# ─── Интерактивный режим ──────────────────────────────────────────────────────
+# Интерактивный режим
 
 def _ask(prompt: str, valid_options: list = None, value_type=str,
          required: bool = False):
     """Запрашивает значение у пользователя."""
     if valid_options:
         options_str = ' / '.join([f"{i+1}.{v}" for i, v in enumerate(valid_options)])
-        full_prompt = f"  {prompt} [{options_str}] (Enter=пропустить): "
+        full_prompt = f"{prompt} [{options_str}] (Enter=пропустить): "
     else:
-        full_prompt = f"  {prompt} (Enter=пропустить): "
+        full_prompt = f"{prompt} (Enter=пропустить): "
 
     while True:
         raw = input(full_prompt).strip()
 
         if raw == '':
             if required:
-                print("  ⚠ Это поле обязательно для заполнения.")
+                print("Это поле обязательно для заполнения.")
                 continue
             return None
 
@@ -161,27 +161,27 @@ def _ask(prompt: str, valid_options: list = None, value_type=str,
             if 0 <= idx < len(valid_options):
                 return valid_options[idx]
             else:
-                print(f"  ⚠ Введите число от 1 до {len(valid_options)}")
+                print(f"Введите число от 1 до {len(valid_options)}")
                 continue
 
         if valid_options:
             match = next((v for v in valid_options if v.lower() == raw.lower()), None)
             if match:
                 return match
-            print(f"  ⚠ Допустимые значения: {valid_options}")
+            print(f"Допустимые значения: {valid_options}")
             continue
 
         try:
             return value_type(raw)
         except ValueError:
-            print(f"  ⚠ Ожидается {value_type.__name__}, попробуйте ещё раз.")
+            print(f"Ожидается {value_type.__name__}, попробуйте ещё раз.")
 
 
 def predict_interactive(model, feature_names: list, df_raw: pd.DataFrame):
     """Интерактивный цикл предсказания цены такси."""
     print("\n" + "="*60)
-    print("  ПРЕДСКАЗАНИЕ ЦЕНЫ ТАКСИ")
-    print("  Заполните известные поля. Пустые поля — нажмите Enter.")
+    print("ПРЕДСКАЗАНИЕ ЦЕНЫ ТАКСИ")
+    print("Заполните известные поля. Пустые поля — нажмите Enter.")
     print("="*60)
 
     while True:
@@ -217,29 +217,28 @@ def predict_interactive(model, feature_names: list, df_raw: pd.DataFrame):
         # Предсказание
         print()
         if not user_input:
-            print("  ⚠ Вы не ввели ни одного значения. Будут использованы средние по датасету.")
+            print("Вы не ввели ни одного значения. Будут использованы средние по датасету.")
 
-        print("  Введённые данные:")
+        print("Введённые данные:")
         for k, v in user_input.items():
             print(f"    {k}: {v}")
 
-        all_fields = ['Компания', 'Эконом', 'Погода', 'Повышенный спрос',
-                      'Расстояние', 'Время поездки/мин', 'Час заказа', 'сом за км']
+        all_fields = ['Компания', 'Эконом', 'Погода', 'Повышенный спрос', 'Расстояние', 'Время поездки/мин', 'Час заказа', 'сом за км']
         skipped = [f for f in all_fields if f not in user_input]
         if skipped:
-            print(f"  Пропущенные поля (заполнятся медианой/модой): {', '.join(skipped)}")
+            print(f"Пропущенные поля (заполнятся медианой/модой): {', '.join(skipped)}")
 
         try:
             price = predict_price(model, feature_names, df_raw, user_input)
-            print(f"\n  ✅ Предсказанная цена: {price:.0f} сом")
+            print(f"\nПредсказанная цена: {price:.0f} сом")
         except Exception as e:
-            print(f"\n  ❌ Ошибка при предсказании: {e}")
+            print(f"\nОшибка при предсказании: {e}")
             import traceback
             traceback.print_exc()
 
-        # Ещё раз?
+        # Ещё раз
         print()
-        again = input("  Предсказать ещё раз? (y / Enter=выход): ").strip().lower()
+        again = input("Предсказать ещё раз? (y / Enter=выход): ").strip().lower()
         if again not in ('y', 'д', 'да', 'yes'):
-            print("  Выход из режима предсказания.\n")
+            print("Выход из режима предсказания.\n")
             break
