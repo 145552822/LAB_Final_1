@@ -1,8 +1,5 @@
 """
 predictor.py — Интерактивное предсказание цены такси после обучения модели.
-
-Запуск: python predictor.py
-или из main.py: from predictor import predict_interactive; predict_interactive(model, feature_names, df_raw)
 """
 
 import numpy as np
