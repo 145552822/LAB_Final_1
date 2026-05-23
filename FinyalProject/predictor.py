@@ -176,10 +176,8 @@ def _ask(prompt: str, valid_options: list = None, value_type=str,
 
 def predict_interactive(model, feature_names: list, df_raw: pd.DataFrame):
     """Интерактивный цикл предсказания цены такси."""
-    print("\n" + "="*60)
     print("ПРЕДСКАЗАНИЕ ЦЕНЫ ТАКСИ")
     print("Заполните известные поля. Пустые поля — нажмите Enter.")
-    print("="*60)
 
     while True:
         print()
